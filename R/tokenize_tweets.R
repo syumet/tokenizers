@@ -68,7 +68,7 @@ tokenize_tweets.default <-
 
     # remove stopwords
     if (!is.null(stopwords)) {
-      for (i in 1L:doc_lengths) {
+      for (i in 1L:length(out)) {
         if (out[i] %in% stopwords) {
           out[i] <- ""
         }
