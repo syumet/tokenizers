@@ -13,7 +13,8 @@ tokenize_tweets <- function(x,
                             stopwords = NULL,
                             strip_punct = TRUE,
                             strip_url = FALSE,
-                            simplify = FALSE) {
+                            simplify = FALSE,
+                            strip_special = FALSE) {
   UseMethod("tokenize_tweets")
 }
 
@@ -24,7 +25,8 @@ tokenize_tweets.data.frame <-
            stopwords = NULL,
            strip_punct = TRUE,
            strip_url = FALSE,
-           simplify = FALSE) {
+           simplify = FALSE,
+           strip_special = FALSE) {
     x <- corpus_df_as_corpus_vector(x)
     tokenize_tweets(x, lowercase, stopwords, strip_punct, strip_url, simplify)
   }
@@ -36,7 +38,8 @@ tokenize_tweets.default <-
            stopwords = NULL,
            strip_punct = TRUE,
            strip_url = FALSE,
-           simplify = FALSE) {
+           simplify = FALSE,
+           strip_special = FALSE) {
     check_input(x)
     named <- names(x)
 
@@ -63,6 +66,15 @@ tokenize_tweets.default <-
         stri_trans_tolower(out[!(index_twitter | index_url)])
     }
 
+    # remove stopwords
+    if (!is.null(stopwords)) {
+      for (i in 1L:doc_lengths) {
+        if (out[i] %in% stopwords) {
+          out[i] <- ""
+        }
+      }
+    }
+
     if (strip_punct) {
       twitter_chars <- stri_sub(out[index_twitter], 1, 1)
       out[!index_url] <-
@@ -81,6 +93,10 @@ tokenize_tweets.default <-
         })
     }
 
+    if (strip_special) {
+      out[index_twitter] <- ""
+    }
+
     # convert the vector back to a list
     out <- split(out,
                  cut(
@@ -93,10 +109,6 @@ tokenize_tweets.default <-
     out <- lapply(out, unlist)
 
     names(out) <- named
-
-    # remove stopwords
-    if (!is.null(stopwords))
-      out <- lapply(out, remove_stopwords, stopwords)
 
     # remove any blanks (from removing URLs)
     out <- lapply(out, function(toks)
