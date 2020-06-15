@@ -1,8 +1,7 @@
 Package: tokenizers
 Type: Package
 Title: Fast, Consistent Tokenization of Natural Language Text
-Version: 0.2.1
-Date: 2018-03-29
+Version: 0.2.2
 Description: Convert natural language text into tokens. Includes tokenizers for
     shingled n-grams, skip n-grams, words, word stems, sentences, paragraphs,
     characters, shingled characters, lines, tweets, Penn Treebank, regular
